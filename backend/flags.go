@@ -1,0 +1,25 @@
+package main
+
+import (
+	"flag"
+	"path"
+)
+
+type FlagOptions struct {
+	address string
+	root    string
+}
+
+var Flags FlagOptions
+
+func ParseFlags() {
+	address := flag.String("address", "0.0.0.0:8080", "address:port")
+	root := flag.String("root", ".", "path to dir location")
+
+	flag.Parse()
+
+	Flags = FlagOptions{
+		address: *address,
+		root:    path.Join(*root, "fs"),
+	}
+}

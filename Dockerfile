@@ -13,13 +13,15 @@ RUN --mount=type=cache,target=/gomod-cache \
 
 COPY ./ ./
 RUN --mount=type=cache,target=/gomod-cache --mount=type=cache,target=/go-cache \
-  go build -o app ./...
+  go build -o out/ ./...
 
 FROM alpine:edge AS runner
 WORKDIR /root
 
+RUN apk upgrade; apk add zellij helix helix-tree-sitter-vendor
+
 EXPOSE 8080
 
-COPY --from=build /root/app /root/app
+COPY --from=build /root/out/* /root/
 
 CMD ["/root/app"]

@@ -1,54 +1,48 @@
 package main
 
 import (
-	"fmt"
-	"io"
 	"net/http"
-	"os"
-	"strings"
 
 	"github.com/charmbracelet/log"
 )
 
 func main() {
+	ParseFlags()
+	fs, err := NewFs(Flags.root)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Infof("root=%v", Flags.root)
+
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /v/latest/", func(w http.ResponseWriter, r *http.Request) {
-		path := strings.TrimPrefix(r.URL.Path, "/v/latest")
-		log.Logf(log.InfoLevel, "GET latest: %s", path)
+	mux.HandleFunc("GET /f/{filepath...}", func(w http.ResponseWriter, r *http.Request) {
+		filepath := r.PathValue("filepath")
+		http.ServeFile(w, r, fs.GetCurrFilePath(filepath))
 	})
 
-	mux.HandleFunc("POST /v/latest/", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseMultipartForm(10 << 20)
+	mux.HandleFunc("POST /f/{filepath...}", func(w http.ResponseWriter, r *http.Request) {
+		filepath := r.PathValue("filepath")
 
+		r.ParseMultipartForm(1 << 20)
 		file, handler, err := r.FormFile("f")
 		if err != nil {
-			fmt.Println("Error Retrieving the File")
-			fmt.Println(err)
+			log.Error(err)
 			return
 		}
 		defer file.Close()
-		fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-		fmt.Printf("File Size: %+v\n", handler.Size)
-		fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-		fileBytes, err := io.ReadAll(file)
+		err = fs.Upload(file, filepath)
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 
-		path := "/root" + strings.TrimPrefix(r.URL.Path, "/v/latest")
-		log.Logf(log.InfoLevel, "path: %s", path)
-
-		err = os.WriteFile(path, fileBytes, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Fprintf(w, "Successfully Uploaded File\n")
+		log.Info("Upload Success", "file", handler.Filename, "path", filepath)
 	})
 
 	server := http.Server{
-		Addr:    "0.0.0.0:8080",
+		Addr:    Flags.address,
 		Handler: mux,
 	}
 
