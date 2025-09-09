@@ -18,7 +18,7 @@ RUN --mount=type=cache,target=/gomod-cache --mount=type=cache,target=/go-cache \
 FROM alpine:edge AS runner
 WORKDIR /root
 
-RUN apk upgrade; apk add zellij helix helix-tree-sitter-vendor
+RUN apk upgrade; apk add curl zellij helix helix-tree-sitter-vendor
 
 EXPOSE 8080
 

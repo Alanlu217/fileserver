@@ -1,7 +1,10 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/charmbracelet/log"
 )
@@ -19,6 +22,22 @@ func main() {
 	mux.HandleFunc("GET /f/{path...}", func(w http.ResponseWriter, r *http.Request) {
 		path := r.PathValue("path")
 		http.ServeFile(w, r, fs.GetCurrPath(path))
+		log.Info("File Serve Success", "path", path)
+	})
+
+	mux.HandleFunc("HEAD /f/{path...}", func(w http.ResponseWriter, r *http.Request) {
+		path := r.PathValue("path")
+		info, err := os.Stat(fs.GetCurrPath(path))
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				w.Header().Add("exists", "0")
+				return
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Header().Add("Exists", "1")
+		w.Header().Add("Size", fmt.Sprint(info.Size()))
 	})
 
 	mux.HandleFunc("POST /f/{path...}", func(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +57,7 @@ func main() {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
-		log.Info("Upload Success", "file", handler.Filename, "path", path)
+		log.Info("Upload Success", "path", path, "size", handler.Size)
 	})
 
 	mux.HandleFunc("DELETE /f/{path...}", func(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +65,7 @@ func main() {
 		if err := fs.Delete(path); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
+		log.Info("Delete Success", "path", path)
 	})
 
 	server := http.Server{
