@@ -12,12 +12,12 @@ import (
 
 const filePerm = 0666
 
-var snap_validate = regexp.MustCompile("$[a-f0-9]{64}")
-var InvalidSnapErr = errors.New("snap is not valid")
+var tag_validate = regexp.MustCompile(`^[\w\-. ]+$`)
+var InvalidTagErr = errors.New("tag is not valid")
 
-func ValidateSnap(snap string) error {
-	if !snap_validate.Match([]byte(snap)) {
-		return InvalidSnapErr
+func ValidateTag(tag string) error {
+	if !tag_validate.Match([]byte(tag)) {
+		return InvalidTagErr
 	}
 	return nil
 }
@@ -40,24 +40,72 @@ func ValidatePath(path string) error {
 	return nil
 }
 
+type Path struct {
+	tag  string
+	path string
+}
+
+func CurrPath(path string) Path {
+	return Path{
+		tag:  "",
+		path: path,
+	}
+}
+
+func TagPath(tag, path string) Path {
+	return Path{
+		tag:  tag,
+		path: path,
+	}
+}
+
+func (p *Path) Resolve(fs *Fs) string {
+	if p.tag == "" {
+		return filepath.Join(fs.root, "curr", p.path)
+	}
+	return filepath.Join(fs.root, "tag", p.tag, p.path)
+}
+
+func (p *Path) Stat(fs *Fs) (os.FileInfo, error) {
+	info, err := os.Stat(p.Resolve(fs))
+	if err != nil {
+		return nil, err
+	}
+
+	return info, nil
+}
+
+func (p *Path) Validate() error {
+	var tagerr error = nil
+	if p.tag != "" {
+		tagerr = ValidateTag(p.tag)
+	}
+	patherr := ValidatePath(p.path)
+
+	return errors.Join(tagerr, patherr)
+}
+
+var ResourceNotFoundErr = errors.New("resource does not exist")
+
 type Fs struct {
 	root string
 }
 
+// Creates new filesystem and creates basic dir structure
 func NewFs(root string) (*Fs, error) {
-	fs := &Fs{root: root}
+	fs := &Fs{root: filepath.Join(root, "fs")}
 
 	err := os.MkdirAll(root, filePerm)
 	if err != nil {
 		return nil, err
 	}
 
-	err = os.MkdirAll(fs.CurrPath(), filePerm)
+	err = os.MkdirAll(filepath.Join(root, "curr"), filePerm)
 	if err != nil {
 		return nil, err
 	}
 
-	err = os.MkdirAll(fs.SnapPath(), filePerm)
+	err = os.MkdirAll(filepath.Join(root, "tags"), filePerm)
 	if err != nil {
 		return nil, err
 	}
@@ -65,33 +113,19 @@ func NewFs(root string) (*Fs, error) {
 	return fs, nil
 }
 
-func (f Fs) CurrPath() string {
-	return filepath.Join(f.root, "curr")
-}
-
-func (f Fs) SnapPath() string {
-	return filepath.Join(f.root, "snap")
-}
-
-func (f Fs) GetCurrPath(path string) string {
-	return filepath.Join(f.CurrPath(), path)
-}
-
-func (f Fs) GetSnapPath(snap, path string) (string, error) {
-	if err := ValidateSnap(snap); err != nil {
-		return "", err
+func (f *Fs) Exists(path Path) bool {
+	if _, err := os.Stat(path.Resolve(f)); err != nil {
+		return false
 	}
-	p := filepath.Join(f.SnapPath(), snap, path)
-
-	return p, nil
+	return true
 }
 
-func (f Fs) Upload(r io.Reader, path string) error {
-	if err := ValidatePath(path); err != nil {
+func (f *Fs) Upload(r io.Reader, path Path) error {
+	if err := path.Validate(); err != nil {
 		return err
 	}
 
-	p := f.GetCurrPath(path)
+	p := path.Resolve(f)
 
 	err := os.MkdirAll(filepath.Dir(p), filePerm)
 	if err != nil {
@@ -113,10 +147,24 @@ func (f Fs) Upload(r io.Reader, path string) error {
 	return nil
 }
 
-func (f Fs) Delete(path string) error {
-	if err := ValidatePath(path); err != nil {
+func (f *Fs) Delete(path Path) error {
+	if !f.Exists(path) {
+		return ResourceNotFoundErr
+	}
+	if err := path.Validate(); err != nil {
 		return err
 	}
-	os.RemoveAll(f.GetCurrPath(path))
+	if err := os.RemoveAll(path.Resolve(f)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (f *Fs) MakeTag(name string, path Path) error {
+	return nil
+}
+
+func (f *Fs) DeleteTag(name string) error {
 	return nil
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"path"
 )
 
 type FlagOptions struct {
@@ -20,6 +19,6 @@ func ParseFlags() {
 
 	Flags = FlagOptions{
 		address: *address,
-		root:    path.Join(*root, "fs"),
+		root:    *root,
 	}
 }
