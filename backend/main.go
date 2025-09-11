@@ -28,8 +28,8 @@ func main() {
 
 		if !fs.Exists(path) {
 			log.Warn("File does not exist", "path", path)
-			fmt.Fprint(w, "resource not found")
 			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "resource not found")
 			return
 		}
 
@@ -65,8 +65,8 @@ func main() {
 		file, handler, err := r.FormFile("f")
 		if err != nil {
 			log.Warn(err)
-			fmt.Fprint(w, err)
 			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err)
 			return
 		}
 		defer file.Close()
@@ -74,8 +74,8 @@ func main() {
 		err = fs.Upload(file, path)
 		if err != nil {
 			log.Warn(err)
-			fmt.Fprint(w, err)
 			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err)
 			return
 		}
 
