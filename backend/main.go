@@ -42,7 +42,7 @@ func main() {
 
 		info, err := path.Stat(fs)
 		if err != nil {
-			log.Info("", "path", path.path, "exists", 0)
+			log.Info("", "path", path, "exists", 0)
 			w.Header().Add("Exists", "0")
 			return
 		}
@@ -79,7 +79,7 @@ func main() {
 			return
 		}
 
-		log.Info("Upload Success", "path", path.Resolve(fs), "size", handler.Size)
+		log.Info("Upload Success", "path", path, "size", handler.Size)
 	})
 
 	mux.HandleFunc("DELETE /f/{path...}", func(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +90,7 @@ func main() {
 			fmt.Fprint(w, err)
 			return
 		}
-		log.Info("Delete Success", "path", path.Resolve(fs))
+		log.Info("Delete Success", "path", path)
 	})
 
 	server := http.Server{
