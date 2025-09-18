@@ -100,12 +100,12 @@ func NewFs(root string) (*Fs, error) {
 		return nil, err
 	}
 
-	err = os.MkdirAll(filepath.Join(root, "curr"), filePerm)
+	err = os.MkdirAll(filepath.Join(root, "fs", "curr"), filePerm)
 	if err != nil {
 		return nil, err
 	}
 
-	err = os.MkdirAll(filepath.Join(root, "tags"), filePerm)
+	err = os.MkdirAll(filepath.Join(root, "fs", "tags"), filePerm)
 	if err != nil {
 		return nil, err
 	}
