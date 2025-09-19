@@ -50,7 +50,7 @@ var Cli struct {
 		Path      string `arg:""`
 		Password  string `short:"p"`
 		NumUses   int    `short:"n"`
-		AliveTime int    `short="t"`
+		AliveTime int    `short:"t"`
 	} `cmd:"" help:"Temporarily share a file or folder"`
 }
 
