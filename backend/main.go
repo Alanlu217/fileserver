@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -20,6 +21,12 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Infof("root=%v", Flags.root)
+
+	authDatabase, err := NewAuthDatabase("./auth.json")
+	if errors.Is(err, os.ErrNotExist) {
+		log.Warn("database doesn't exist at ./auth.json. Creating new database")
+		CreateAuthDatabase("./auth.json")
+	}
 
 	mux := http.NewServeMux()
 
@@ -91,6 +98,19 @@ func main() {
 			return
 		}
 		log.Info("Delete Success", "path", path)
+	})
+
+	mux.HandleFunc("POST /u/login", func(w http.ResponseWriter, r *http.Request) {
+		username, password, ok := r.BasicAuth()
+		if !ok {
+			log.Info("login failed")
+			w.WriteHeader(401)
+			return
+		}
+
+		if !checkAuth(authDatabase, username, password) {
+			log.Warnf("invalid login %s:%s", username, password)
+		}
 	})
 
 	server := http.Server{

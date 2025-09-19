@@ -1,0 +1,29 @@
+{
+    "admin": ["user1", "user2"],
+    "users": {
+        "user1": "1280937123",
+        "user2": "ah1902bg2"
+    },
+    "sessions": {
+        "jkasdhjkasdh": {
+            "username": "user1",
+            "last_login": 208342083
+        },
+        "hj187294husd": {
+            "username": "user2",
+            "last_login": -1
+        }
+    },
+    "shared_files": {
+        "hs21j2": {
+            "files": ["file.txt"],
+            "accesses": 10,
+            "time_shared": 73258937,
+            "lifetime": 7200
+        }
+    },
+    "permissions": {
+        "file.txt": ["user1", "user2"],
+        "file2.txt": ["user1"]
+    }
+}

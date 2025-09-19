@@ -40,9 +40,14 @@ func ValidatePath(path string) error {
 	return nil
 }
 
+func ValidateFile(path string, user string) {
+	return nil
+}
+
 type Path struct {
 	tag  string
 	path string
+	owners []string
 }
 
 func CurrPath(path string) Path {

@@ -5,5 +5,5 @@ run:
 	docker run -it --rm -p8080:8080 file
 
 sh:
-	docker run -it --rm --net="host" file ash
+	docker run -it --net="host" --name="File" file ash
 
