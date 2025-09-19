@@ -23,8 +23,19 @@
         }
     },
     "permissions": {
-        "/user1/directory1": ["user1", "user2"],
-        "/user1/directory1": ["user1"],
-        "/user2/directory1": ["user1", "user2"]
+        "/user1/directory1": {
+            "user1": 3,
+            "user2": 2
+        },
+        "/user1/directory1": {
+            "user1": 3
+        },
+        "/user2/directory1": {
+            "user1": 2,
+            "user2": 3
+        },
+        "/user1/directory1/file.txt": {
+            "user2": 1
+        }
     }
 }
