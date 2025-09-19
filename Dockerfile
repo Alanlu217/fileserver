@@ -24,4 +24,4 @@ EXPOSE 8080
 
 COPY --from=build /root/out/* /root/
 
-CMD ["/root/backend"]
+CMD ["/root/mnemo"]

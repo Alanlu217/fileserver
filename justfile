@@ -1,5 +1,5 @@
 native:
-    go build -o out/backend ./backend
+    go build -o out/mnemo ./mnemo
     go build -o out/syne ./syne
 
 build:
