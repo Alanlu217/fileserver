@@ -56,3 +56,15 @@ func CreateAuthDatabase(file string) (*AuthDatabase, error) {
 
 	return NewAuthDatabase(file)
 }
+
+func (d *AuthDatabase) CheckAuth(username string, password string) bool {
+	saved_password, ok := d.users[username]
+	if !ok {
+		return false
+	}
+	return saved_password == password
+}
+
+func (d *AuthDatabase) GetSessionToken(username string) string {
+
+}

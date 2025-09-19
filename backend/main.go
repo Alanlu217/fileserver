@@ -108,7 +108,7 @@ func main() {
 			return
 		}
 
-		if !checkAuth(authDatabase, username, password) {
+		if !authDatabase.CheckAuth(username, password) {
 			log.Warnf("invalid login %s:%s", username, password)
 		}
 	})
