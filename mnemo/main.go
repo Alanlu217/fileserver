@@ -16,7 +16,7 @@ func main() {
 	}))
 
 	ParseFlags()
-	fs, err := NewFs(Flags.root)
+	fs, err := NewAtlas(Flags.root)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,6 +77,10 @@ func main() {
 			return
 		}
 		defer file.Close()
+
+		if len(path.path) == 0 || path.path[len(path.path)-1] == '/' {
+			path.path += handler.Filename
+		}
 
 		err = fs.Upload(file, path)
 		if err != nil {

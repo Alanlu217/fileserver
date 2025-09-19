@@ -64,15 +64,15 @@ func TagPath(tag, path string) Path {
 	}
 }
 
-func (p *Path) Resolve(fs *Fs) string {
+func (p *Path) Resolve(atlas *Atlas) string {
 	if p.tag == "" {
-		return filepath.Join(fs.root, "curr", p.path)
+		return filepath.Join(atlas.root, "curr", p.path)
 	}
-	return filepath.Join(fs.root, "tag", p.tag, p.path)
+	return filepath.Join(atlas.root, "tag", p.tag, p.path)
 }
 
-func (p *Path) Stat(fs *Fs) (os.FileInfo, error) {
-	info, err := os.Stat(p.Resolve(fs))
+func (p *Path) Stat(atlas *Atlas) (os.FileInfo, error) {
+	info, err := os.Stat(p.Resolve(atlas))
 	if err != nil {
 		return nil, err
 	}
@@ -92,42 +92,46 @@ func (p *Path) Validate() error {
 
 var ResourceNotFoundErr = errors.New("resource does not exist")
 
-type Fs struct {
+type Atlas struct {
 	root string
 }
 
 // Creates new filesystem and creates basic dir structure
-func NewFs(root string) (*Fs, error) {
-	fs := &Fs{root: filepath.Join(root, "fs")}
+func NewAtlas(root string) (*Atlas, error) {
+	atlas := &Atlas{root: filepath.Join(root, "atlas")}
 
 	err := os.MkdirAll(root, filePerm)
 	if err != nil {
 		return nil, err
 	}
 
-	err = os.MkdirAll(filepath.Join(root, "curr"), filePerm)
+	err = os.MkdirAll(filepath.Join(root, "atlas", "curr"), filePerm)
 	if err != nil {
 		return nil, err
 	}
 
-	err = os.MkdirAll(filepath.Join(root, "tags"), filePerm)
+	err = os.MkdirAll(filepath.Join(root, "atlas", "tags"), filePerm)
 	if err != nil {
 		return nil, err
 	}
 
-	return fs, nil
+	return atlas, nil
 }
 
-func (f *Fs) Exists(path Path) bool {
+func (f *Atlas) Exists(path Path) bool {
 	if _, err := os.Stat(path.Resolve(f)); err != nil {
 		return false
 	}
 	return true
 }
 
-func (f *Fs) Upload(r io.Reader, path Path) error {
+func (f *Atlas) Upload(r io.Reader, path Path) error {
 	if err := path.Validate(); err != nil {
 		return err
+	}
+
+	if path.path == "" {
+		return fmt.Errorf("Can't upload to root")
 	}
 
 	p := path.Resolve(f)
@@ -152,7 +156,7 @@ func (f *Fs) Upload(r io.Reader, path Path) error {
 	return nil
 }
 
-func (f *Fs) Delete(path Path) error {
+func (f *Atlas) Delete(path Path) error {
 	if !f.Exists(path) {
 		return ResourceNotFoundErr
 	}
@@ -166,10 +170,10 @@ func (f *Fs) Delete(path Path) error {
 	return nil
 }
 
-func (f *Fs) MakeTag(name string, path Path) error {
+func (f *Atlas) MakeTag(name string, path Path) error {
 	return nil
 }
 
-func (f *Fs) DeleteTag(name string) error {
+func (f *Atlas) DeleteTag(name string) error {
 	return nil
 }

@@ -1,9 +1,12 @@
+native:
+    go build -o out/mnemo ./mnemo
+    go build -o out/syne ./syne
+
 build:
 	docker build -t file .
 
 run:
-	docker run -it --rm -p8080:8080 file
+	docker run -it --rm --net="host" file
 
 sh:
-	docker run -it --net="host" --name="File" file ash
-
+	docker run -it --net="host" --name="File" file zellij
