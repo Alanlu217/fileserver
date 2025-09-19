@@ -15,11 +15,10 @@ var Cli struct {
 		Url  string `arg:"" help:"Url to the server"`
 	} `cmd:"" help:"Registers a server"`
 
-	Login struct {
-		Username string `arg:"" help:"The Username"`
-		Password string `arg:"" help:"The Password"`
-	} `cmd:"" help:"Login to account"`
-	Logout    struct{} `cmd:"" help:"Logout from account"`
+	Login  struct{} `cmd:"" help:"Login to account"`
+	Logout struct {
+		Others bool `short:"o" help:"Logout all others"`
+	} `cmd:"" help:"Logout from account"`
 	Logoutall struct{} `cmd:"" help:"Logout from all accounts"`
 
 	Init struct {
@@ -36,12 +35,23 @@ var Cli struct {
 		From string `arg:"" help:"What file to upload" type:"path"`
 		To   string `arg:"" help:"Where to upload the file" default:"/"`
 	} `cmd:"" help:"Add a File or Folder to the server"`
+	Mv struct {
+		From string `arg:"" help:"The File / Folder to rename"`
+		To   string `arg:"" help:"The new name / path"`
+	} `cmd:"" help:"Renames a File or Folder on the server"`
 	Del struct {
 		Path string `arg:"" help:"File or Folder to delete"`
 	} `cmd:"" help:"Deletes a File or Folder"`
 	Info struct {
 		Path string `arg:""`
 	} `cmd:"" help:"Get info on a file or folder"`
+
+	Share struct {
+		Path      string `arg:""`
+		Password  string `short:"p"`
+		NumUses   int    `short:"n"`
+		AliveTime int    `short="t"`
+	} `cmd:"" help:"Temporarily share a file or folder"`
 }
 
 func main() {
