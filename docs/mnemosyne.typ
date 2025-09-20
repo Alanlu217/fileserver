@@ -194,6 +194,8 @@ Absolute paths beginning in “/” in an initialised directory and out expand t
 
 Absolute paths beginning in “\~” expand to the root of the initialised directory. Does not work outside of initialised directories.
 
+Server registry file will be searched for at the `SYNE_REGISTRY` environment variable, or in `~/.syne.json`.
+
 #[
   #show raw: it => text(fill: blue, it)
   - `register <name> <url>`
