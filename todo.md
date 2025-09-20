@@ -1,0 +1,39 @@
+## Mnemo
+- [ ] Database
+    - [ ] Batch updating
+    - [ ] Add or remove a user
+    - [ ] Add or remove a session token
+    - [ ] Add or remove user permissions
+    - [ ] Add or remove shared file
+    - [ ] Add or remove files
+- [ ] File operations
+	- [ ] Upload a file
+	- [ ] Download a ffile
+	- [ ] Delete a file
+	- [ ] Query a file
+	- [ ] Rename/move a file
+- [ ] Authentication
+	- [ ] Registration
+	- [ ] Login
+	- [ ] Secure session cookie
+- [ ] User permissions
+	- [ ] Single user
+	- [ ] Multi user
+	- [ ] Temporary shared
+- [ ] Networking
+- [ ] Docker deployment
+## Syne
+- [ ] Login
+- [ ] Linux
+- [ ] MacOS
+- [ ] Windows (?)
+- [ ] Directory registration
+- [ ] File sharing
+- [ ] File syncing
+## GUI
+- [ ] Website
+- [ ] Mobile app (?)
+- [ ] Windows
+- [ ] Linux
+- [ ] MacOS
+- [ ] File preview
