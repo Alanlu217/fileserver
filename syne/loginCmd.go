@@ -1,8 +1,10 @@
 package main
 
+import "errors"
+
 type LoginCmd struct {
 }
 
 func (c *LoginCmd) Run() error {
-	return nil
+	return errors.New("Not Implemented Yet")
 }

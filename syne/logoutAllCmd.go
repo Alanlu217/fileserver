@@ -1,7 +1,9 @@
 package main
 
+import "errors"
+
 type LogoutAllCmd struct{}
 
 func (c *LogoutAllCmd) Run() error {
-	return nil
+	return errors.New("Not Implemented Yet")
 }

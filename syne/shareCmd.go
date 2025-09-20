@@ -1,5 +1,7 @@
 package main
 
+import "errors"
+
 type ShareCmd struct {
 	Path      string `arg:""`
 	Password  string `short:"p"`
@@ -8,5 +10,5 @@ type ShareCmd struct {
 }
 
 func (c *ShareCmd) Run() error {
-	return nil
+	return errors.New("Not Implemented Yet")
 }
