@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/alecthomas/kong"
@@ -41,6 +42,6 @@ func main() {
 
 	err = ctx.Run()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 }
