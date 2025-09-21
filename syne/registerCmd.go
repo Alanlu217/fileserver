@@ -22,5 +22,6 @@ func (c *RegisterCmd) Run() error {
 
 	fmt.Printf("Adding %s %s\n", Cli.Register.Name, Cli.Register.Url)
 	Reg[Cli.Register.Name] = &Server{Url: Cli.Register.Url}
-	return nil
+
+	return Reg.Write()
 }

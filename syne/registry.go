@@ -52,3 +52,17 @@ func ParseRegistry() (ServerRegistry, error) {
 
 	return registry, nil
 }
+
+func (r *ServerRegistry) Write() error {
+	path, err := GetRegistryPath()
+	if err != nil {
+		return err
+	}
+
+	bytes, err := json.Marshal(r)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(path, bytes, 0644)
+}
