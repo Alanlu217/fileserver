@@ -21,6 +21,7 @@ type InternalResponseCode int
 const (
 	SUCCESS InternalResponseCode = iota
 	USER_EXISTS
+	USER_DOESNT_EXIST
 )
 
 type Session struct {
@@ -164,13 +165,28 @@ func (d *AuthDatabase) UpdateSession(session_token string, recently_accessed boo
 	}
 }
 
-func (d *AuthDatabase) CreateUser(username string) (InternalResponseCode, error) {
+func (d *AuthDatabase) CreateUser(username string) InternalResponseCode {
 	// Check for an existing user with the same name
 	for key, _ := range d.Users {
 		if key == username {
-			return USER_EXISTS, nil
+			return USER_EXISTS
 		}
 	}
+
+	// No matching username found, create a new user with the username and password the same
+	d.Users[username] = username
+
+	return SUCCESS
+}
+
+func (d *AuthDatabase) RemoveUser(username string) InternalResponseCode {
+	// Check the user exists
+	_, ok := d.Users[username]
+	if !ok {
+		return USER_DOESNT_EXIST
+	}
+	delete(d.Users, username)
+	return SUCCESS
 }
 
 func (d *AuthDatabase) Save() error {
