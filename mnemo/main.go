@@ -22,7 +22,7 @@ func main() {
 	}
 	log.Infof("root=%v", Flags.root)
 
-	authDatabase, err := NewAuthDatabase("./auth.json")
+	authDatabase, err := LoadAuthDatabase("./auth.json")
 	if errors.Is(err, os.ErrNotExist) {
 		log.Warn("database doesn't exist at ./auth.json. Creating new database")
 		CreateAuthDatabase("./auth.json")

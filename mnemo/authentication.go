@@ -4,28 +4,47 @@ import (
 	_ "embed"
 	"encoding/json"
 	"os"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 //go:embed authTemplate.json
 var templateDatabase string
 
-type AuthDatabase struct {
-	admins   []string
-	users    map[string]string
-	sessions map[string]struct {
-		username   string
-		last_login int
-	}
-	shared_files map[string]struct {
-		files       []string
-		accesses    int
-		time_shared int
-		lifetime    int
-	}
-	permissions map[string][]string
+// Keep session alive for a week of inactivity
+const SESSION_LIFETIME = 604800
+
+type Session struct {
+	Username   string
+	Last_login int
 }
 
-func NewAuthDatabase(file string) (*AuthDatabase, error) {
+type SharedFile struct {
+	Files       []string
+	Accesses    int
+	Time_shared int
+	Lifetime    int
+}
+
+type UserPermission map[string]int
+
+type AuthDatabase struct {
+	Filename     string
+	Admin        []string                  `json:"admin"`
+	Users        map[string]string         `json:"users"`
+	Sessions     map[string]Session        `json:"sessions"`
+	Shared_files map[string]SharedFile     `json:"shared_files"`
+	Permissions  map[string]UserPermission `json:"permissions"`
+}
+
+func LoadAuthDatabase(file string) (*AuthDatabase, error) {
+	databaseFile, err := os.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	defer databaseFile.Close()
+
 	content, err := os.ReadFile(file)
 
 	if err != nil {
@@ -37,6 +56,8 @@ func NewAuthDatabase(file string) (*AuthDatabase, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	payload.Filename = file
 
 	return &payload, nil
 }
@@ -54,7 +75,7 @@ func CreateAuthDatabase(file string) (*AuthDatabase, error) {
 		return nil, err
 	}
 
-	return NewAuthDatabase(file)
+	return LoadAuthDatabase(file)
 }
 
 func (d *AuthDatabase) CheckAuth(username string, password string) bool {

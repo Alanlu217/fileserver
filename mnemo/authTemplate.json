@@ -1,13 +1,13 @@
 {
   "admin": ["admin"],
   "users": {
-      "admin": "admin"
+    "admin": "admin"
   },
   "sessions": {},
   "shared_files": {},
   "permissions": {
-      "/": {
-          "admin": 3
-      }
+    "/": {
+      "admin": 3
+    }
   }
 }
