@@ -22,6 +22,7 @@ const (
 	SUCCESS InternalResponseCode = iota
 	USER_EXISTS
 	USER_DOESNT_EXIST
+	INVALID_LOGIN
 )
 
 type Session struct {
@@ -187,6 +188,16 @@ func (d *AuthDatabase) RemoveUser(username string) InternalResponseCode {
 	}
 	delete(d.Users, username)
 	return SUCCESS
+}
+
+func (d *AuthDatabase) LoginUser(username string, password string) (string, InternalResponseCode, error) {
+	if !d.CheckAuth(username, password) {
+		return "", INVALID_LOGIN, nil
+	}
+
+	session_token, err := d.GetSessionToken(username)
+
+	return session_token, SUCCESS, err
 }
 
 func (d *AuthDatabase) Save() error {
