@@ -52,6 +52,20 @@ func (suite *DatabaseTestSuite) TestCreation() {
 	os.Remove("testingDatabase.json")
 }
 
+func (suite *DatabaseTestSuite) TestAccountOperations() {
+	testingDatabase, err := CreateAuthDatabase("testingDatabase.json")
+	assert.Equal(suite.T(), nil, err)
+
+	newUser := make(map[string]string)
+	newUser["test"] = "test"
+
+	testingDatabase.CreateUser("test")
+	assert.Contains(suite.T(), testingDatabase.Users, "test")
+
+	testingDatabase.RemoveUser("test")
+	assert.NotContains(suite.T(), testingDatabase.Users, "test")
+}
+
 func TestDatabaseTestSuite(t *testing.T) {
 	suite.Run(t, new(DatabaseTestSuite))
 }
