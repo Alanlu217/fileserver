@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/alecthomas/kong"
+	"github.com/yarlson/pin"
 )
 
 var Reg ServerRegistry
@@ -31,6 +33,8 @@ var Cli struct {
 	Share ShareCmd `cmd:"" help:"Temporarily share a file or folder"`
 }
 
+var Pin *pin.Pin
+
 func main() {
 	var err error
 	ctx := kong.Parse(&Cli)
@@ -39,6 +43,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	Pin = pin.New("Syne...")
+	cancel := Pin.Start(context.Background())
+	defer cancel()
 
 	err = ctx.Run()
 	if err != nil {

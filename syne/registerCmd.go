@@ -1,13 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
-
-	"github.com/yarlson/pin"
 )
 
 type RegisterCmd struct {
@@ -24,38 +21,35 @@ func (c *RegisterCmd) Run() error {
 		}
 
 		Reg[c.Name] = &Server{Url: c.Url}
-		return Reg.Write()
-	}
 
-	if c.Name == "" {
-		c.Name = "Get from server"
+		Pin.Stop("Done!")
+		return Reg.Write()
 	}
 
 	c.Name = strings.TrimSpace(c.Name)
 
-	path := fmt.Sprintf("http://%s/name", c.Url)
+	if c.Name == "" {
+		path := fmt.Sprintf("http://%s/name", c.Url)
 
-	p := pin.New("Getting Server Name...")
-	cancel := p.Start(context.Background())
-	defer cancel()
+		Pin.UpdateMessage("Getting Server Name...")
+		name, err := http.Get(path)
 
-	name, err := http.Get(path)
-
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+		if name.StatusCode != 200 {
+			return fmt.Errorf("Server error")
+		}
+		name_bytes, err := io.ReadAll(name.Body)
+		if err != nil {
+			return err
+		}
+		c.Name = string(name_bytes)
 	}
-	if name.StatusCode != 200 {
-		return fmt.Errorf("Server error")
-	}
-	name_bytes, err := io.ReadAll(name.Body)
-	if err != nil {
-		return err
-	}
-	c.Name = string(name_bytes)
 
 	fmt.Printf("Adding %s %s\n", c.Name, c.Url)
 	Reg[c.Name] = &Server{Url: c.Url}
-	p.Stop("Done!")
 
+	Pin.Stop("Done!")
 	return Reg.Write()
 }
