@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,6 +48,8 @@ func (suite *DatabaseTestSuite) TestCreation() {
 
 	assert.Equal(suite.T(), nil, err)
 	assert.Equal(suite.T(), suite.Database, createdDatabase)
+
+	os.Remove("testingDatabase.json")
 }
 
 func TestDatabaseTestSuite(t *testing.T) {
