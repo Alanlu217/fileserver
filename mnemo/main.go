@@ -23,6 +23,15 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("GET /name", func(w http.ResponseWriter, r *http.Request) {
+		name, ok := os.LookupEnv("MNEMO_NAME")
+		if !ok {
+			name = "mnemo"
+		}
+
+		fmt.Fprint(w, name)
+	})
+
 	mux.HandleFunc("GET /f/{path...}", func(w http.ResponseWriter, r *http.Request) {
 		path := CurrPath(r.PathValue("path"))
 
