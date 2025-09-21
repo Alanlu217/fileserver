@@ -22,6 +22,7 @@ RUN apk upgrade; apk add curl zellij helix helix-tree-sitter-vendor
 
 EXPOSE 8080
 
+COPY docker/config.kdl /root/.config/zellij/config.kdl
 COPY --from=build /root/out/* /root/
 
 CMD ["/root/mnemo"]
