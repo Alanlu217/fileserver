@@ -5,8 +5,8 @@ native:
 build:
 	docker build -t file .
 
-run:
+run: build
 	docker run -it --rm --net="host" file
 
-sh:
+sh: build
 	docker run -it --rm --net="host" file zellij
